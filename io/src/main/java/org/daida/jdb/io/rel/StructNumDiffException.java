@@ -1,27 +1,20 @@
 package org.daida.jdb.io.rel;
 
-public class StructNumDiffException extends StructureException {
+public class StructNumDiffException extends StructException {
     public final String[] sources;
 
-    public StructNumDiffException(
-            String structureId,
-            StructType structureType,
-            String... sources
-    ) {
-        super(structureId, structureType);
+    public StructNumDiffException(String structId, StructType structType, String... sources) {
+        super(structId, structType);
         this.sources = sources;
     }
 
     @Override
     public String getMessage() {
         var msg = new StringBuilder("The number");
-        if (this.sources.length > 0) {
-            msg.append(" of ").append(sources[0]);
-            for (var i = 1; i < sources.length - 1; i++) {
-                msg.append(", ").append(sources[i]);
-            }
-            msg.append(" and ").append(sources.length - 1);
+        for (var i = 0; i < sources.length; i++) {
+            var separator = i == 0 ? " of " : (i == sources.length - 1 ? " and " : ", ");
+            msg.append(separator).append(sources[i]);
         }
-        return msg.append(" is different").toString();
+        return msg.append(" is different in the ").append(this.structType.getName()).append(" ").append(this.structId).toString();
     }
 }

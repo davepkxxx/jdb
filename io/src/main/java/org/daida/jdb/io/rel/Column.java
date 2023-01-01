@@ -1,12 +1,13 @@
 package org.daida.jdb.io.rel;
 
+import org.daida.jdb.lang.NotNull;
+
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.daida.jdb.io.rel.StructType.*;
 
-public class Column implements ThrowNotFound {
+public class Column implements StructModel, StructInit {
     private String id;
 
     private String name;
@@ -28,6 +29,13 @@ public class Column implements ThrowNotFound {
     private List<String> foreignKeyIds = Collections.emptyList();
 
     private List<ForeignKey> foreignKeys;
+
+    public Column() {
+    }
+
+    public Column(String id) {
+        this.id = id;
+    }
 
     public String getId() {
         return id;
@@ -122,17 +130,9 @@ public class Column implements ThrowNotFound {
         return COLUMN;
     }
 
-    void init(DbStruct structure) {
-        this.setTable(structure.getTables().stream().filter(tab ->
-                tab.getId().equals(this.getTableId())
-        ).findFirst().orElseGet(this.notFoundSupplier(this.getTableId(), TABLE)));
-        this.setPrimaryKey(structure.getPrimaryKeys().stream().filter(key ->
-                key.getId().equals(this.getPrimaryKeyId())
-        ).findFirst().orElseGet(this.notFoundSupplier(this.getPrimaryKeyId(), PRIMARY_KEY)));
-        this.setForeignKeys(this.getForeignKeyIds().stream().map(keyId ->
-                this.foreignKeys.stream().filter(key ->
-                        key.getId().equals(keyId)
-                ).findFirst().orElseGet(this.notFoundSupplier(keyId, FOREIGN_KEY))
-        ).collect(Collectors.toList()));
+    void init(@NotNull DbStruct struct) throws StructNotFoundException {
+        this.setTable(this.find(struct.getTables(), this.getTableId(), TABLE));
+        this.setPrimaryKey(this.find(struct.getPrimaryKeys(), this.getPrimaryKeyId(), PRIMARY_KEY));
+        this.setForeignKeys(this.filter(struct.getForeignKeys(), this.getForeignKeyIds(), FOREIGN_KEY));
     }
 }

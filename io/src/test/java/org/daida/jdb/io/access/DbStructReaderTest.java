@@ -16,7 +16,6 @@ class DbStructReaderTest {
 
     @BeforeEach
     void setUp() {
-        instance = new DbStructReader();
     }
 
     @AfterEach

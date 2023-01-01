@@ -6,18 +6,12 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
 import java.io.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-public class DbStructReader implements AutoCloseable {
+public class DbStructReader implements Closeable {
     private InputStream input;
 
-    public DbStructReader() {
-        try {
-            this.input = new FileInputStream(new File(this.getEnvDir(), "table.yaml"));
-        } catch (FileNotFoundException e) {
-            Logger.getLogger("jdb.io").log(Level.CONFIG, e.getMessage());
-        }
+    public DbStructReader(InputStream input) {
+        this.input = input;
     }
 
     private File getEnvDir() {

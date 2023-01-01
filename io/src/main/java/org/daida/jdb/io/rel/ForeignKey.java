@@ -1,5 +1,7 @@
 package org.daida.jdb.io.rel;
 
+import org.daida.jdb.lang.NotNull;
+
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -7,7 +9,7 @@ import java.util.Map;
 
 import static org.daida.jdb.io.rel.StructType.*;
 
-public class ForeignKey implements ThrowNotFound, ThrowNumDiff {
+public class ForeignKey implements StructModel, StructInit, ThrowNumDiff {
     private String id;
 
     private String name;
@@ -16,7 +18,7 @@ public class ForeignKey implements ThrowNotFound, ThrowNumDiff {
 
     private Table table;
 
-    private String foreignTableId;
+    private String referenceTableId;
 
     private Table referenceTable;
 
@@ -29,6 +31,13 @@ public class ForeignKey implements ThrowNotFound, ThrowNumDiff {
     private List<Column> referenceColumns;
 
     private Map<Column, Column> columnMapper;
+
+    public ForeignKey() {
+    }
+
+    public ForeignKey(String id) {
+        this.id = id;
+    }
 
     public String getId() {
         return id;
@@ -62,12 +71,12 @@ public class ForeignKey implements ThrowNotFound, ThrowNumDiff {
         this.table = table;
     }
 
-    public String getForeignTableId() {
-        return foreignTableId;
+    public String getReferenceTableId() {
+        return referenceTableId;
     }
 
-    public void setForeignTableId(String foreignTableId) {
-        this.foreignTableId = foreignTableId;
+    public void setReferenceTableId(String referenceTableId) {
+        this.referenceTableId = referenceTableId;
     }
 
     public Table getReferenceTable() {
@@ -123,31 +132,19 @@ public class ForeignKey implements ThrowNotFound, ThrowNumDiff {
         return FOREIGN_KEY;
     }
 
-    void init(DbStruct struct) {
-        this.setTable(struct.getTables().stream().filter(tab ->
-                tab.getId().equals(this.getTableId())
-        ).findFirst().orElseGet(this.notFoundSupplier(this.getTableId(), TABLE)));
-        this.setReferenceTable(struct.getTables().stream().filter(tab ->
-                tab.getId().equals(this.getForeignTableId())
-        ).findFirst().orElseGet(this.notFoundSupplier(this.getForeignTableId(), TABLE)));
-        this.setColumns(this.getColumnIds().stream().map(colId ->
-                struct.getColumns().stream().filter(col ->
-                        col.getId().equals(colId)
-                ).findFirst().orElseGet(this.notFoundSupplier(colId, COLUMN))
-        ).toList());
-        this.setReferenceColumns(this.getReferenceColumnIds().stream().map(colId ->
-                struct.getColumns().stream().filter(col ->
-                        col.getId().equals(colId)
-                ).findFirst().orElseGet(this.notFoundSupplier(colId, COLUMN))
-        ).toList());
+    void init(@NotNull DbStruct struct) {
+        this.setTable(this.find(struct.getTables(), this.getTableId(), TABLE));
+        this.setReferenceTable(this.find(struct.getTables(), this.getReferenceTableId(), TABLE));
+        this.setColumns(this.filter(struct.getColumns(), this.getColumnIds(), COLUMN));
+        this.setReferenceColumns(this.filter(struct.getColumns(), this.getReferenceColumnIds(), COLUMN));
+
         if (this.getColumns().size() != this.getReferenceColumns().size()) {
             this.throwNumDiff("columns");
         }
-        var cols = this.getColumns();
-        var refCols = this.getReferenceColumns();
+        var that = this;
         this.setColumnMapper(new LinkedHashMap<>() {{
-            for (var i = 0; i < Math.max(cols.size(), refCols.size()); i++) {
-                put(cols.get(i), refCols.get(i));
+            for (var i = 0; i < that.getColumns().size(); i++) {
+                put(that.getColumns().get(i), that.getReferenceColumns().get(i));
             }
         }});
     }

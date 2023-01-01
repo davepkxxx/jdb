@@ -1,18 +1,27 @@
 package org.daida.jdb.io.rel;
 
+import org.daida.jdb.lang.NotNull;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.daida.jdb.io.rel.StructType.*;
 
-public class PrimaryKey implements ThrowNotFound {
+public class PrimaryKey implements StructModel, StructInit {
     private String id;
     private String name;
     private String tableId;
     private Table table;
     private List<String> columnIds = Collections.emptyList();
     private List<Column> columns;
+
+    public PrimaryKey() {
+    }
+
+    public PrimaryKey(String id) {
+        this.id = id;
+    }
 
     public String getId() {
         return id;
@@ -67,14 +76,8 @@ public class PrimaryKey implements ThrowNotFound {
         return PRIMARY_KEY;
     }
 
-    void init(DbStruct structure) {
-        this.setTable(structure.getTables().stream().filter(tab ->
-                tab.getId().equals(this.getTableId())
-        ).findFirst().orElseGet(this.notFoundSupplier(this.getTableId(), TABLE)));
-        this.setColumns(this.getColumnIds().stream().map(colId ->
-                this.columns.stream().filter(col ->
-                        col.getId().equals(colId)
-                ).findFirst().orElseGet(this.notFoundSupplier(colId, COLUMN))
-        ).collect(Collectors.toList()));
+    void init(@NotNull DbStruct struct) {
+        this.setTable(this.find(struct.getTables(), this.getTableId(), TABLE));
+        this.setColumns(this.filter(struct.getColumns(), this.getColumnIds(), COLUMN));
     }
 }
