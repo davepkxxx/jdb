@@ -1,5 +1,6 @@
 package org.daida.jdb.io.rel;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.daida.jdb.lang.NotNull;
 
 import java.util.Collections;
@@ -12,21 +13,27 @@ public class Column implements StructModel, StructInit {
 
     private String name;
 
-    private String tableId;
-
-    private Table table;
-
     private String dataType;
 
     private Integer dataLength;
 
+    private Integer dataPrecision;
+
     private Boolean notNull;
+
+    private String tableId;
+
+    @JsonIgnore
+    private Table table;
 
     private String primaryKeyId;
 
+    @JsonIgnore
     private PrimaryKey primaryKey;
 
     private List<String> foreignKeyIds = Collections.emptyList();
+
+    @JsonIgnore
 
     private List<ForeignKey> foreignKeys;
 
@@ -53,22 +60,6 @@ public class Column implements StructModel, StructInit {
         this.name = name;
     }
 
-    public String getTableId() {
-        return tableId;
-    }
-
-    public void setTableId(String tableId) {
-        this.tableId = tableId;
-    }
-
-    public Table getTable() {
-        return table;
-    }
-
-    public void setTable(Table table) {
-        this.table = table;
-    }
-
     public String getDataType() {
         return dataType;
     }
@@ -85,12 +76,36 @@ public class Column implements StructModel, StructInit {
         this.dataLength = dataLength;
     }
 
+    public Integer getDataPrecision() {
+        return dataPrecision;
+    }
+
+    public void setDataPrecision(Integer dataPrecision) {
+        this.dataPrecision = dataPrecision;
+    }
+
     public Boolean getNotNull() {
         return notNull;
     }
 
     public void setNotNull(Boolean notNull) {
         this.notNull = notNull;
+    }
+
+    public String getTableId() {
+        return tableId;
+    }
+
+    public void setTableId(String tableId) {
+        this.tableId = tableId;
+    }
+
+    public Table getTable() {
+        return table;
+    }
+
+    public void setTable(Table table) {
+        this.table = table;
     }
 
     public String getPrimaryKeyId() {
@@ -126,6 +141,7 @@ public class Column implements StructModel, StructInit {
     }
 
     @Override
+    @JsonIgnore
     public StructType getStructType() {
         return COLUMN;
     }

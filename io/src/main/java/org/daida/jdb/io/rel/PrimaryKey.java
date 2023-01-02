@@ -1,5 +1,6 @@
 package org.daida.jdb.io.rel;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.daida.jdb.lang.NotNull;
 
 import java.util.Collections;
@@ -10,10 +11,17 @@ import static org.daida.jdb.io.rel.StructType.*;
 
 public class PrimaryKey implements StructModel, StructInit {
     private String id;
+
     private String name;
+
     private String tableId;
+
+    @JsonIgnore
     private Table table;
+
     private List<String> columnIds = Collections.emptyList();
+
+    @JsonIgnore
     private List<Column> columns;
 
     public PrimaryKey() {
@@ -72,6 +80,7 @@ public class PrimaryKey implements StructModel, StructInit {
     }
 
     @Override
+    @JsonIgnore
     public StructType getStructType() {
         return PRIMARY_KEY;
     }

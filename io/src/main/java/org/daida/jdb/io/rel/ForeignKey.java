@@ -1,5 +1,6 @@
 package org.daida.jdb.io.rel;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.daida.jdb.lang.NotNull;
 
 import java.util.Collections;
@@ -16,20 +17,25 @@ public class ForeignKey implements StructModel, StructInit, ThrowNumDiff {
 
     private String tableId;
 
+    @JsonIgnore
     private Table table;
 
     private String referenceTableId;
 
+    @JsonIgnore
     private Table referenceTable;
 
     private List<String> columnIds = Collections.emptyList();
 
+    @JsonIgnore
     private List<Column> columns;
 
     private List<String> referenceColumnIds = Collections.emptyList();
 
+    @JsonIgnore
     private List<Column> referenceColumns;
 
+    @JsonIgnore
     private Map<Column, Column> columnMapper;
 
     public ForeignKey() {
@@ -128,6 +134,7 @@ public class ForeignKey implements StructModel, StructInit, ThrowNumDiff {
     }
 
     @Override
+    @JsonIgnore
     public StructType getStructType() {
         return FOREIGN_KEY;
     }

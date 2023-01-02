@@ -18,6 +18,7 @@
         <module>jdbc</module>
         <module>lang</module>
         <module>io</module>
+        <module>test</module>
     </modules>
 
     <dependencyManagement>
@@ -43,21 +44,24 @@
                 <version>3.12.0</version>
             </dependency>
             <dependency>
-                <groupId>org.yaml</groupId>
-                <artifactId>snakeyaml</artifactId>
-                <version>1.33</version>
+                <groupId>com.fasterxml.jackson.dataformat</groupId>
+                <artifactId>jackson-dataformat-yaml</artifactId>
+                <version>2.14.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.daida.jdb</groupId>
+                <artifactId>test</artifactId>
+                <version>1.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter</artifactId>
                 <version>5.9.1</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-inline</artifactId>
                 <version>4.11.0</version>
-                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
